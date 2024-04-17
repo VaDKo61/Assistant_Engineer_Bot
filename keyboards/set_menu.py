@@ -1,7 +1,7 @@
 from aiogram import Bot
 from aiogram.types import BotCommand, BotCommandScopeAllPrivateChats
 
-from lexicon.text import commands
+from lexicon.replica import commands
 
 
 async def set_main_menu(bot: Bot):
