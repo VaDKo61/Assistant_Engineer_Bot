@@ -1,12 +1,12 @@
 from aiogram.types import InlineKeyboardMarkup
 
-from keyboards.keyboard_utils import RulesCallbackFactory, inline_kb_rules, RulesReadCallbackFactory, \
+from keyboards.keyboard_utils_rules import RulesCallbackFactory, inline_kb_rules, RulesReadCallbackFactory, \
     inline_kb_rules_read
 
 from lexicon import rules, replica
 
 
-def get_rules(callback_data: RulesCallbackFactory) -> (str, InlineKeyboardMarkup):
+async def get_rules(callback_data: RulesCallbackFactory) -> (str, InlineKeyboardMarkup):
     """get a text for answer, and a built-in keyboard depending on the level"""
     if callback_data.level == 0:
         text_answer = replica.navigation['category']
@@ -21,7 +21,7 @@ def get_rules(callback_data: RulesCallbackFactory) -> (str, InlineKeyboardMarkup
     return text_answer, keyboard
 
 
-def get_rules_read(callback_data: RulesReadCallbackFactory) -> (str, InlineKeyboardMarkup):
+async def get_rules_read(callback_data: RulesReadCallbackFactory) -> (str, InlineKeyboardMarkup):
     """get a text for answer, and a built-in keyboard depending on rule"""
     text_answer = str('{}.{}. {}'.format(callback_data.category,
                                          callback_data.subcategory,

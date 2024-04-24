@@ -77,3 +77,17 @@ def inline_kb_rules_read(category: int, subcategory: int) -> InlineKeyboardMarku
     kb_builder.row(*buttons_1, width=1)
     kb_builder.row(*buttons_2, width=3)
     return kb_builder.as_markup()
+
+
+def inline_kb_menu() -> InlineKeyboardMarkup:
+    """create a built-in keyboard menu"""
+    kb_builder = InlineKeyboardBuilder()
+    buttons: list[InlineKeyboardButton] = []
+    buttons.append(InlineKeyboardButton(text=replica.navigation['rules'],
+                                        callback_data=RulesCallbackFactory(level=0, category=0, subcategory=0).pack()))
+    buttons.append(InlineKeyboardButton(text=replica.navigation['engineer'],
+                                        callback_data='engineer'))
+    buttons.append(InlineKeyboardButton(text=replica.navigation['object'],
+                                        callback_data='add_object')),
+    kb_builder.row(*buttons, width=1)
+    return kb_builder.as_markup()

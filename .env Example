@@ -1,1 +1,2 @@
-BOT_TOKEN=
+BOT_TOKEN=65das8923a52:AasdqaYS-iipdfagiSsZ2ozbghfOEeFasdJyU
+DB_LITE=sqlite+aiosqlite:///my_base.db
