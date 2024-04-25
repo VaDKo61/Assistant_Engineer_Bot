@@ -21,19 +21,31 @@ class Object(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     address: Mapped[str] = mapped_column(String(150), nullable=False)
-    responsible_id: Mapped[int] = mapped_column(ForeignKey('engineer.id', ondelete='CASCADE'), nullable=False)
+    engineer_id: Mapped[int] = mapped_column(ForeignKey('engineer.id', ondelete='CASCADE'), nullable=False)
+    checked: Mapped[bool] = mapped_column(Boolean, default=False)
 
-    responsible: Mapped['Engineer'] = relationship(backref='object')
+    engineer: Mapped['Engineer'] = relationship(backref='object')
+
+
+class Block(Base):
+    __tablename__ = 'block'
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    name: Mapped[int] = mapped_column(String(100), nullable=False)
+    checked: Mapped[bool] = mapped_column(Boolean, default=False)
+    object_id: Mapped[int] = mapped_column(ForeignKey('object.id', ondelete='CASCADE'), nullable=False)
+
+    object: Mapped['Object'] = relationship(backref='block')
 
 
 class CheckList(Base):
     __tablename__ = 'checklist'
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    address_id: Mapped[int] = mapped_column(ForeignKey('object.id', ondelete='CASCADE'), nullable=False)
-    type: Mapped[str] = mapped_column(String(50), nullable=False)
+    block_id: Mapped[int] = mapped_column(ForeignKey('block.id', ondelete='CASCADE'), nullable=False)
     scheme: Mapped[bool] = mapped_column(Boolean, default=False)
     one_c: Mapped[bool] = mapped_column(Boolean, default=False)
     equipment: Mapped[bool] = mapped_column(Boolean, default=False)
+    location: Mapped[bool] = mapped_column(Boolean, default=False)
+    optimal: Mapped[bool] = mapped_column(Boolean, default=False)
 
-    address: Mapped['Object'] = relationship(backref='checklist')
+    address: Mapped['Block'] = relationship(backref='checklist')

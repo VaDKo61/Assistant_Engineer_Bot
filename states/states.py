@@ -10,4 +10,4 @@ class FSMFillEngineer(StatesGroup):
 
 class FSMFillObject(StatesGroup):
     address = State()
-    responsible = State()
+    engineer = State()

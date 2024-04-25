@@ -1,7 +1,7 @@
 from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database.models import Engineer
+from database.models import Engineer, Object
 
 
 async def orm_add_engineer(session: AsyncSession, data: dict):
@@ -28,4 +28,11 @@ async def orm_get_engineer(session: AsyncSession, engineer_id: int):
 async def orm_delete_engineer(session: AsyncSession, engineer_id: int):
     query = delete(Engineer).where(Engineer.id == engineer_id)
     await session.execute(query)
+    await session.commit()
+
+
+async def orm_add_object(session: AsyncSession, data: dict):
+    obj = Object(address=data['address'],
+                 engineer_id=data['engineer_id'])
+    session.add(obj)
     await session.commit()

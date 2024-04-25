@@ -36,7 +36,7 @@ async def process_delete_engineer(callback: CallbackQuery, session: AsyncSession
                                   callback_data: EngineerCallbackFactory):
     await orm_delete_engineer(session, callback_data.id)
     await callback.answer('Инженер удален!')
-    await callback.message.edit_text('Инженер удален!')
+    await callback.message.edit_text('❌ Инженер удален!')
 
 
 @router_engineer.callback_query(F.data == 'add_engineer', StateFilter(default_state))
@@ -88,7 +88,7 @@ async def process_phone_sent(message: Message, state: FSMContext, session: Async
     data = await state.get_data()
     try:
         await orm_add_engineer(session, data)
-        await message.answer('Инженер добавлен.')
+        await message.answer('➕ Инженер добавлен.')
         await state.clear()
     except Exception as e:
         await message.answer(f'Ошибка {e}')
