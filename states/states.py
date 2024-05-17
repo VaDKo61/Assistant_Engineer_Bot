@@ -11,3 +11,9 @@ class FSMFillEngineer(StatesGroup):
 class FSMFillObject(StatesGroup):
     address = State()
     engineer = State()
+
+
+class FSMFillBlock(StatesGroup):
+    name = State()
+    object = State()
+    engineer = State()

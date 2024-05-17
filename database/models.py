@@ -1,3 +1,5 @@
+from typing import List
+
 from sqlalchemy import String, Boolean, DateTime, func, ForeignKey
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
@@ -24,6 +26,7 @@ class Object(Base):
     engineer_id: Mapped[int] = mapped_column(ForeignKey('engineer.id', ondelete='CASCADE'), nullable=False)
     checked: Mapped[bool] = mapped_column(Boolean, default=False)
 
+    blocks: Mapped[List['Block']] = relationship('Block', back_populates='object')
     engineer: Mapped['Engineer'] = relationship(backref='object')
 
 
@@ -33,8 +36,10 @@ class Block(Base):
     name: Mapped[int] = mapped_column(String(100), nullable=False)
     checked: Mapped[bool] = mapped_column(Boolean, default=False)
     object_id: Mapped[int] = mapped_column(ForeignKey('object.id', ondelete='CASCADE'), nullable=False)
+    engineer_id: Mapped[int] = mapped_column(ForeignKey('engineer.id', ondelete='CASCADE'), nullable=False)
 
-    object: Mapped['Object'] = relationship(backref='block')
+    object: Mapped['Object'] = relationship('Object', back_populates='blocks')
+    engineer: Mapped['Engineer'] = relationship(backref='block_engineer')
 
 
 class CheckList(Base):

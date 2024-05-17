@@ -1,24 +1,25 @@
 from aiogram import Router, F
+from aiogram.enums import ContentType
 from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
 from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database.orm_query import orm_add_object
-from keyboards.keyboard_utils_object import inline_kb_choose_engineer, ObjectCallbackFactory
-from states.states import FSMFillObject
+from database.orm_query import orm_add_object, orm_get_objects_checked
+from keyboards.keyboard_utils_object_block import inline_kb_choose_engineer, ObjectCallbackFactory, inline_kb_look_block
+from states.states import FSMFillObject, FSMFillBlock
 
 router_object = Router()
 
 
 @router_object.callback_query(F.data == 'add_object', StateFilter(default_state))
 async def process_add_object_command(callback: CallbackQuery, state: FSMContext):
-    await callback.message.answer('Введите адрес объекта:')
+    await callback.message.edit_text('Введите адрес объекта:')
     await state.set_state(FSMFillObject.address)
 
 
-@router_object.message(StateFilter(FSMFillObject.address), F.text.isalnum())
+@router_object.message(StateFilter(FSMFillObject.address), F.content_type == ContentType.TEXT)
 async def process_address_sent(message: Message, state: FSMContext, session: AsyncSession):
     await state.update_data(address=message.text)
     await message.answer(text='Выберите ответственного за объект:',
@@ -31,9 +32,10 @@ async def warning_not_address(message: Message):
     await message.answer('Вы ввели некорректный адрес!\nВедите адрес объекта.\nОтменить внесение данных - /cancel')
 
 
-@router_object.callback_query(ObjectCallbackFactory.filter())
-async def process_engineer_sent(callback: CallbackQuery, state: FSMContext, session: AsyncSession):
-    await state.update_data(engineer_id=callback.message.text)
+@router_object.callback_query(ObjectCallbackFactory.filter(), StateFilter(FSMFillObject.engineer))
+async def process_engineer_sent(callback: CallbackQuery, callback_data: ObjectCallbackFactory, state: FSMContext,
+                                session: AsyncSession):
+    await state.update_data(engineer_id=callback_data.id)
     data = await state.get_data()
     try:
         await orm_add_object(session, data)
@@ -44,6 +46,23 @@ async def process_engineer_sent(callback: CallbackQuery, state: FSMContext, sess
         await state.clear()
 
 
-@router_object.message(StateFilter(FSMFillObject.engineer))
+@router_object.message(StateFilter(FSMFillObject.engineer, FSMFillBlock.engineer))
 async def warning_not_engineer(message: Message):
     await message.answer('Выберите инженера выше!\nОтменить внесение данных - /cancel')
+
+
+@router_object.callback_query(F.data == 'list_object_checked', StateFilter(default_state))
+async def process_list_get_object_checked(callback: CallbackQuery, session: AsyncSession):
+    list_obj: list[str] = []
+    for obj in await orm_get_objects_checked(session, True):
+        list_obj.append(f'<b>{obj.address}</b>\nИнженер: {obj.engineer.firstname} {obj.engineer.surname}')
+    await callback.message.edit_text('\n'.join(list_obj))
+
+
+@router_object.callback_query(F.data == 'list_object_unchecked', StateFilter(default_state))
+async def process_list_get_object_unchecked(callback: CallbackQuery, session: AsyncSession):
+    await callback.message.delete()
+    for obj in await orm_get_objects_checked(session, False):
+        await callback.message.answer(
+            text=f'<b>{obj.address}</b>\nИнженер: {obj.engineer.firstname} {obj.engineer.surname}',
+            reply_markup=await inline_kb_look_block(obj))

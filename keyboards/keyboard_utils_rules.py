@@ -87,6 +87,10 @@ def inline_kb_menu() -> InlineKeyboardMarkup:
                                         callback_data=RulesCallbackFactory(level=0, category=0, subcategory=0).pack()))
     buttons.append(InlineKeyboardButton(text=replica.navigation['engineer'],
                                         callback_data='engineer'))
+    buttons.append(InlineKeyboardButton(text=replica.navigation['list_object_checked'],
+                                        callback_data='list_object_checked'))
+    buttons.append(InlineKeyboardButton(text=replica.navigation['list_object_unchecked'],
+                                        callback_data='list_object_unchecked'))
     buttons.append(InlineKeyboardButton(text=replica.navigation['object'],
                                         callback_data='add_object')),
     kb_builder.row(*buttons, width=1)

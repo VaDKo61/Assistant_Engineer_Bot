@@ -9,6 +9,7 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 
 from database.engine import create_db, session_maker
+from handlers.user_handlers_block import router_block
 from handlers.user_handlers_engineer import router_engineer
 from handlers.user_handlers_object import router_object
 from keyboards.set_menu import set_main_menu
@@ -23,6 +24,7 @@ dp = Dispatcher()
 dp.include_router(router_rules)
 dp.include_router(router_engineer)
 dp.include_router(router_object)
+dp.include_router(router_block)
 
 
 async def on_startup():
