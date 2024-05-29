@@ -17,3 +17,11 @@ class FSMFillBlock(StatesGroup):
     name = State()
     object = State()
     engineer = State()
+
+
+class FSMFillCheckList(StatesGroup):
+    scheme = State()
+    one_c = State()
+    equipment = State()
+    location = State()
+    optimal = State()

@@ -55,7 +55,10 @@ async def warning_not_engineer(message: Message):
 async def process_list_get_object_checked(callback: CallbackQuery, session: AsyncSession):
     list_obj: list[str] = []
     for obj in await orm_get_objects_checked(session, True):
-        list_obj.append(f'<b>{obj.address}</b>\nИнженер: {obj.engineer.firstname} {obj.engineer.surname}')
+        block = [f'<b>{i.name}</b> - {i.engineer.firstname} {i.engineer.surname}' for i in obj.blocks]
+        list_obj.append(f'<b><u>{obj.address}</u></b>\n'
+                        f'Инженер: {obj.engineer.firstname} {obj.engineer.surname}\n'
+                        f'Узлы: {"; ".join(block)}')
     await callback.message.edit_text('\n'.join(list_obj))
 
 

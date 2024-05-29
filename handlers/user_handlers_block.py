@@ -6,7 +6,7 @@ from aiogram.fsm.state import default_state
 from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database.orm_query import orm_add_block, orm_get_blocks_object
+from database.orm_query import orm_add_block, orm_get_blocks_object, orm_get_object
 from keyboards.keyboard_utils_object_block import inline_kb_choose_engineer, ObjectCallbackFactory, \
     BlockLookCallbackFactory, \
     inline_kb_object_block
@@ -55,13 +55,17 @@ async def warning_not_engineer(message: Message):
 
 
 @router_block.callback_query(BlockLookCallbackFactory.filter(), StateFilter(default_state))
-async def process_list_get_object_block(callback: CallbackQuery, callback_data: ObjectCallbackFactory,
+async def process_list_get_object_block(callback: CallbackQuery, callback_data: BlockLookCallbackFactory,
                                         session: AsyncSession):
     blocks = await orm_get_blocks_object(callback_data.id, session)
     await callback.message.delete()
-    await callback.message.answer(text=f'🔻 {callback.message.text.split("Инженер")[0]}')
+    obj = await orm_get_object(session, callback_data.id)
+    await callback.message.answer(text=f'🔻 <b><u>{obj.address}</u></b>')
     for block in blocks:
-        await callback.message.answer(text=f'Узел: {block.name}'
-                                           f'\nИнженер: {block.engineer.firstname} {block.engineer.surname}'
-                                           f'\nСтатус: {"✅ Проверен" if block.checked else "❌ Не проверен"}',
-                                      reply_markup=await inline_kb_object_block(block))
+        text = f'Узел: <b>{block.name}</b>\nИнженер: {block.engineer.firstname} {block.engineer.surname}\n' \
+               f'Статус: {"✅ Проверен" if block.checked else "❌ Не проверен"}'
+        if block.checked:
+            await callback.message.answer(text=text)
+        else:
+            await callback.message.answer(text=text,
+                                          reply_markup=await inline_kb_object_block(block, callback_data.id))

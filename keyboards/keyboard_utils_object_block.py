@@ -3,7 +3,7 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database.models import Object
+from database.models import Object, Block
 from database.orm_query import orm_get_engineers
 
 
@@ -11,8 +11,10 @@ class ObjectCallbackFactory(CallbackData, prefix='object'):
     id: int
 
 
-class BlockCallbackFactory(CallbackData, prefix='block'):
+class BlockCheckCallbackFactory(CallbackData, prefix='block_check'):
     id: int
+    name: str
+    object_id: int
 
 
 class BlockLookCallbackFactory(CallbackData, prefix='block_look'):
@@ -29,10 +31,10 @@ async def inline_kb_choose_engineer(session: AsyncSession):
     return kb_builder.as_markup()
 
 
-async def inline_kb_object_block(obj: Object):
+async def inline_kb_object_block(block: Block, object_id: int):
     keyboard = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(
         text='📑 Проверить узел',
-        callback_data=BlockCallbackFactory(id=obj.id).pack())]])
+        callback_data=BlockCheckCallbackFactory(id=block.id, name=block.name, object_id=object_id).pack())]])
     return keyboard
 
 
