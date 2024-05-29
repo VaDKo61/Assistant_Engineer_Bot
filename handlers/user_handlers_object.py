@@ -1,6 +1,6 @@
 from aiogram import Router, F
 from aiogram.enums import ContentType
-from aiogram.filters import StateFilter
+from aiogram.filters import StateFilter, Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
 from aiogram.types import CallbackQuery, Message
@@ -16,6 +16,12 @@ router_object = Router()
 @router_object.callback_query(F.data == 'add_object', StateFilter(default_state))
 async def process_add_object_command(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text('Введите адрес объекта:')
+    await state.set_state(FSMFillObject.address)
+
+
+@router_object.message(Command('add_object'), StateFilter(default_state))
+async def process_add_object_menu(message: Message, state: FSMContext):
+    await message.answer('Введите адрес объекта:')
     await state.set_state(FSMFillObject.address)
 
 

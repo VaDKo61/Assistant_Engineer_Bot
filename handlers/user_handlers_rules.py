@@ -61,8 +61,3 @@ async def process_cancel_command_state(message: Message, state: FSMContext):
     await message.answer('Вы отменили внесение данных.')
     await state.clear()
 
-
-# routers for checklist
-@router_rules.message(Command('checklist'), StateFilter(default_state))
-async def process_checklist_command(message: Message):
-    await message.answer('asd')

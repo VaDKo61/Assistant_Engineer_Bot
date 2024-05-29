@@ -1,7 +1,7 @@
 commands: dict[str, str] = {
     'menu': 'Меню',
     'rules': 'Правила для инженера-конструктора',
-    'checklist': 'Чек лист для проверки узла БТП',
+    'add_object': 'Добавить объект в БД',
     'cancel': 'Отменить внесение данных',
 }
 information: dict[str, str] = {
